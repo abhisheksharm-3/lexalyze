@@ -1,9 +1,9 @@
 <script lang="ts">
   import { FileText, MessageSquare, ArrowRight, Sparkles, Check } from 'lucide-svelte';
-  import * as Card from "$lib/components/ui/card";
-  import { Input } from "$lib/components/ui/input";
-  import { Button } from "$lib/components/ui/button";
-  import { Alert, AlertDescription } from "$lib/components/ui/alert";
+  import * as Card from "$lib/components/ui/card/index.ts";
+  import { Input } from "$lib/components/ui/input/index.ts";
+  import { Button } from "$lib/components/ui/button/index.ts";
+  import { Alert, AlertDescription } from "$lib/components/ui/alert/index.ts";
 
   let email = '';
   let submitted = false;
