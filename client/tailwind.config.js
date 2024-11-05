@@ -15,12 +15,7 @@ const config = {
 		},
 		extend: {
 			fontFamily: {
-				// Cal font from Fontshare
-				cal: ['Cal', 'sans-serif'],
-				// Outfit from Google Fonts
-				outfit: ['Outfit', 'sans-serif'],
-				// Inter from Google Fonts
-				inter: ['Inter', 'sans-serif'],
+				sans: ['"Plus Jakarta Sans"', 'sans-serif']
 			  },
 			colors: {
 				border: "hsl(var(--border) / <alpha-value>)",
