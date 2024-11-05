@@ -29,12 +29,7 @@
       <!-- Brand Section -->
       <div class="xl:col-span-4 space-y-8">
         <div class="flex items-center space-x-3 group cursor-pointer">
-          <div class="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center transition-transform group-hover:scale-105">
-            <Gavel class="h-8 w-8 text-primary transition-transform group-hover:rotate-12" />
-          </div>
-          <span class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
-            Lexalyze
-          </span>
+          <img src="/logo-long-dark.png" alt="lexalyze logo" class="w-[80%]"/>
         </div>
         
         <p class="text-lg text-muted-foreground/90 max-w-md leading-relaxed">
