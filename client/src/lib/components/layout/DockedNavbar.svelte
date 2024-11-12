@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ModeToggle from './../ModeToggle.svelte';
     import {
       GavelIcon,
       ScaleIcon,
@@ -10,25 +11,39 @@
       PhoneCallIcon,
       ClockIcon,
       DollarSignIcon,
+      Home,
+      LayoutDashboard,
+      Info,
     } from 'lucide-svelte';
     import * as Tooltip from "$lib/components/ui/tooltip/index";
     import Separator from "$lib/components/ui/separator/separator.svelte";
     import Dock from "$lib/components/ui/dock/Dock.svelte";
     import DockIcons from "$lib/components/ui/dock/DockIcons.svelte";
   
+    // let navs = {
+    //   mainServices: [
+    //     { label: "Legal Consultation", icon: GavelIcon, href: "/consultation" },
+    //     { label: "Document Review", icon: FileTextIcon, href: "/documents" },
+    //     { label: "Case Analysis", icon: ScaleIcon, href: "/analysis" },
+    //     { label: "Legal Research", icon: SearchIcon, href: "/research" },
+    //   ],
+    //   additionalServices: [
+    //     { label: "Knowledge Base", icon: BookOpenIcon, href: "/resources" },
+    //     { label: "Contact Us", icon: PhoneCallIcon, href: "/contact" },
+    //     { label: "Pricing", icon: DollarSignIcon, href: "/pricing" },
+    //   ],
+    // };
+
     let navs = {
       mainServices: [
-        { label: "Legal Consultation", icon: GavelIcon, href: "/consultation" },
-        { label: "Document Review", icon: FileTextIcon, href: "/documents" },
-        { label: "Case Analysis", icon: ScaleIcon, href: "/analysis" },
-        { label: "Legal Research", icon: SearchIcon, href: "/research" },
+        { label: "Home", icon: Home, href: "/" },
+        { label: "Analyze", icon: ScaleIcon, href: "/analyze" },
+        { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
       ],
       additionalServices: [
-        { label: "Knowledge Base", icon: BookOpenIcon, href: "/resources" },
-        { label: "Contact Us", icon: PhoneCallIcon, href: "/contact" },
-        { label: "Pricing", icon: DollarSignIcon, href: "/pricing" },
+        { label: "About Us", icon: Info, href: "/about" },
       ],
-    };
+    };  
   </script>
   
   <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
@@ -76,6 +91,8 @@
             </Tooltip.Root>
           </DockIcons>
         {/each}
+        <Separator orientation="vertical" class="h-full w-[0.6px] mx-2 bg-primary/20" />
+        <ModeToggle />
       </Dock>
     </div>
   </div>

@@ -39,15 +39,15 @@
         <Card class="bg-primary/5 border-primary/20 hover:border-primary/30 transition-colors">
           <CardContent class="p-4">
             <div class="flex space-x-8">
-              <a href="#" class="text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-110">
+              <a href="/" class="text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-110">
                 <span class="sr-only">Facebook</span>
                 <Facebook class="h-6 w-6" />
               </a>
-              <a href="#" class="text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-110">
+              <a href="/" class="text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-110">
                 <span class="sr-only">Twitter</span>
                 <Twitter class="h-6 w-6" />
               </a>
-              <a href="#" class="text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-110">
+              <a href="/" class="text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-110">
                 <span class="sr-only">LinkedIn</span>
                 <Linkedin class="h-6 w-6" />
               </a>
@@ -64,7 +64,7 @@
           <ul class="space-y-4">
             {#each productLinks as item}
               <li>
-                <a href="#" class="group flex items-center text-base text-muted-foreground hover:text-primary transition-colors duration-200">
+                <a href="/" class="group flex items-center text-base text-muted-foreground hover:text-primary transition-colors duration-200">
                   <ArrowRight class="mr-2 h-4 w-4 opacity-0 -translate-x-4 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
                   <span class="group-hover:translate-x-1 transition-transform duration-200">{item}</span>
                 </a>
@@ -79,7 +79,7 @@
           <ul class="space-y-4">
             {#each supportLinks as item}
               <li>
-                <a href="#" class="group flex items-center text-base text-muted-foreground hover:text-primary transition-colors duration-200">
+                <a href="/" class="group flex items-center text-base text-muted-foreground hover:text-primary transition-colors duration-200">
                   <ArrowRight class="mr-2 h-4 w-4 opacity-0 -translate-x-4 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
                   <span class="group-hover:translate-x-1 transition-transform duration-200">{item}</span>
                 </a>
@@ -94,7 +94,7 @@
           <ul class="space-y-4">
             {#each companyLinks as item}
               <li>
-                <a href="#" class="group flex items-center text-base text-muted-foreground hover:text-primary transition-colors duration-200">
+                <a href="/" class="group flex items-center text-base text-muted-foreground hover:text-primary transition-colors duration-200">
                   <ArrowRight class="mr-2 h-4 w-4 opacity-0 -translate-x-4 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
                   <span class="group-hover:translate-x-1 transition-transform duration-200">{item}</span>
                 </a>
@@ -109,7 +109,7 @@
           <ul class="space-y-4">
             {#each legalLinks as item}
               <li>
-                <a href="#" class="group flex items-center text-base text-muted-foreground hover:text-primary transition-colors duration-200">
+                <a href="/" class="group flex items-center text-base text-muted-foreground hover:text-primary transition-colors duration-200">
                   <ArrowRight class="mr-2 h-4 w-4 opacity-0 -translate-x-4 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
                   <span class="group-hover:translate-x-1 transition-transform duration-200">{item}</span>
                 </a>

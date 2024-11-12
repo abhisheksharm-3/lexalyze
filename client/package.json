@@ -14,11 +14,12 @@
 		"@sveltejs/kit": "^2.7.5",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"autoprefixer": "^10.4.20",
-		"bits-ui": "^1.0.0-next.44",
+		"bits-ui": "^1.0.0-next.51",
 		"clsx": "^2.1.1",
 		"postcss": "^8.4.47",
 		"svelte": "^5.1.9",
 		"svelte-check": "^4.0.5",
+		"svelte-radix": "^2.0.1",
 		"tailwind-merge": "^2.5.4",
 		"tailwind-variants": "^0.2.1",
 		"tailwindcss": "^3.4.14",
@@ -29,6 +30,7 @@
 	"dependencies": {
 		"class-variance-authority": "^0.7.0",
 		"lucide-svelte": "^0.454.0",
+		"mode-watcher": "^0.4.1",
 		"npm-check-updates": "^17.1.10",
 		"svelte-motion": "^0.12.2"
 	}
