@@ -2,7 +2,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 import spacy
 from transformers import pipeline
 import PyPDF2
@@ -13,7 +13,7 @@ app = FastAPI()
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # SvelteKit dev server
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,7 +26,7 @@ summarizer = pipeline("summarization")
 
 class Query(BaseModel):
     question: str
-    context: str
+    context: dict | str
 
 class DocumentAnalysis(BaseModel):
     entities: dict
@@ -78,9 +78,13 @@ async def upload_document(file: UploadFile = File(...)):
 async def answer_query(query: Query):
     """Answer questions about the document"""
     try:
+        if not query.question or not query.context:
+            raise HTTPException(status_code=400, detail="Question and context must not be empty")
+            
+        context_text = query.context if isinstance(query.context, str) else str(query.context)
         answer = qa_model(
-            question=query.question,
-            context=query.context
+            question=query.question.strip(),
+            context=context_text.strip()
         )
         return {"answer": answer["answer"]}
     except Exception as e:
