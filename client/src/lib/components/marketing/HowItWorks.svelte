@@ -56,57 +56,69 @@
       <!-- Vertical line -->
       <div class="absolute left-4 inset-y-0 w-0.5 bg-primary/30 md:left-1/2 md:-ml-0.5"></div>
 
-      <div class="space-y-12 relative">
-        {#each steps as step, index}
-          <div class="flex items-center {index % 2 === 0 ? 'md:flex-row-reverse' : ''} group">
-            <div class="flex-1 md:w-1/2"></div>
-            
-            <!-- Timeline Node -->
+      <div class="relative">
+        <!-- Timeline line - adjusted for better mobile view -->
+        <div 
+          class="absolute left-4 sm:left-4 inset-y-0 w-0.5 bg-gradient-to-b from-primary/50 via-primary/30 to-primary/50 
+          md:left-1/2 md:-ml-0.5 rounded-full"
+        ></div>
+  
+        <div class="space-y-8 relative">
+          {#each steps as step, index}
             <div 
-              class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground shrink-0 mx-4 md:mx-6 z-10 
-              transition-transform duration-300 group-hover:scale-110 group-hover:shadow-lg"
+              class="flex flex-col md:flex-row items-start 
+              {index % 2 === 0 ? 'md:flex-row-reverse' : ''} 
+              relative pl-12 sm:pl-8 md:pl-0"
             >
-              {index + 1}
-            </div>
-
-            <!-- Card -->
-            <Card 
-              class="flex-1 md:w-1/2 group relative overflow-hidden backdrop-blur-sm 
-              transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-            >
-              <CardHeader>
-                <!-- Step Badge -->
-                <Badge variant="outline" class="mb-6 w-fit bg-primary/5">
-                  <CheckCircle2 class="mr-1.5 h-3.5 w-3.5" />
-                  {step.badge}
-                </Badge>
-
-                <CardContent class="p-0 flex items-start space-x-4">
-                  <!-- Icon -->
-                  <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 
-                    transition-colors group-hover:bg-primary/20">
-                    <svelte:component
-                      this={step.icon}
-                      class="w-6 h-6 text-primary"
-                      size={24}
-                    />
-                  </div>
-
-                  <div>
-                    <h3 class="font-semibold text-xl mb-2">{step.title}</h3>
-                    <p class="text-muted-foreground">{step.description}</p>
-                    
-                    <!-- Hover State Arrow -->
-                    <div class="mt-4 flex items-center text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                      Learn more
-                      <ArrowRight class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <div class="hidden md:block flex-1 md:w-1/2 md:px-8"></div>
+              
+              <!-- Timeline node - adjusted size and position -->
+              <div 
+                class="absolute left-0 md:static flex items-center justify-center w-8 h-8 md:w-10 md:h-10 
+                rounded-full bg-primary text-primary-foreground shrink-0 md:mx-6 z-10 
+                shadow-lg shadow-primary/20 transition-all duration-300 
+                group-hover:scale-110 group-hover:shadow-xl"
+              >
+                <span class="font-bold text-sm md:text-base">{index + 1}</span>
+              </div>
+  
+              <!-- Card - simplified for mobile -->
+              <Card 
+                class="flex-1 w-full md:w-1/2 md:px-8 group relative overflow-hidden 
+                border border-primary/10 shadow-sm
+                transition-all duration-300 hover:shadow-lg hover:shadow-primary/10
+                hover:border-primary/20 mt-2 md:mt-0"
+              >
+                <CardHeader class="p-4 md:p-6">
+                  <Badge 
+                    variant="outline" 
+                    class="mb-4 w-fit bg-primary/10 text-primary text-xs md:text-sm font-medium"
+                  >
+                    <CheckCircle2 class="mr-1.5 h-3 w-3 md:h-3.5 md:w-3.5" />
+                    {step.badge}
+                  </Badge>
+  
+                  <CardContent class="p-0 flex items-start space-x-3 md:space-x-4">
+                    <div 
+                      class="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"
+                    >
+                      <svelte:component
+                        this={step.icon}
+                        class="w-5 h-5 md:w-7 md:h-7 text-primary"
+                        size={24}
+                      />
                     </div>
-                  </div>
-                </CardContent>
-              </CardHeader>
-            </Card>
-          </div>
-        {/each}
+  
+                    <div class="space-y-2">
+                      <h3 class="font-semibold text-lg md:text-xl">{step.title}</h3>
+                      <p class="text-muted-foreground text-sm md:text-base leading-relaxed">{step.description}</p>
+                    </div>
+                  </CardContent>
+                </CardHeader>
+              </Card>
+            </div>
+          {/each}
+        </div>
       </div>
     </div>
   </div>
