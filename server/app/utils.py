@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from server.app.main import LegalClause, LegalEntities
+from .models import LegalClause, LegalEntities
 
 
 def _compare_entities(entities1: LegalEntities, entities2: LegalEntities) -> Dict:

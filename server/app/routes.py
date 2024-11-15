@@ -91,7 +91,7 @@ async def query_document(
         # Use the QA model to answer the query
         result = legal_processor.qa_model({
             "question": legal_query.question,
-            "context": legal_query.context if legal_query.context else analysis.summary
+            "context": legal_query.context if legal_query.context != "None" else analysis.summary
         })
 
         return {
