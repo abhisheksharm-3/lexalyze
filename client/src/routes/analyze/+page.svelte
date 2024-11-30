@@ -18,6 +18,10 @@
   import { Alert, AlertDescription } from "$lib/components/ui/alert";
   import { tweened } from "svelte/motion";
   import { fade } from "svelte/transition";
+  import { enhance } from "$app/forms";
+  import type { ActionData } from "./$types";
+
+  export let form: ActionData;
 
   interface AnalysisFeature {
     icon: typeof FileText;
@@ -146,11 +150,12 @@
   const setQuestionFromSuggestion = (q: string) => {
     question = q;
   };
+
+  $: processedData = form?.processedData;
+  $: analysisError = form?.error;
 </script>
 
-<div
-  class="relative w-full min-h-screen bg-background text-foreground overflow-hidden"
->
+<form method="POST" use:enhance action="?/uploadDocument" enctype="multipart/form-data" class="relative w-full min-h-screen bg-background text-foreground overflow-hidden">
   <div class="absolute inset-0">
     <div
       class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(var(--primary-rgb),0.04),transparent_50%)]"
@@ -213,6 +218,7 @@
               <input
                 type="file"
                 id="file-upload"
+                name="file"
                 class="hidden"
                 on:change={handleFileUpload}
                 accept=".pdf,.doc,.docx,.txt"
@@ -342,6 +348,7 @@
                 <div class="relative">
                   <input
                     type="text"
+                    name="question"
                     bind:value={question}
                     placeholder="Ask a question about your document..."
                     class="w-full p-4 pr-12 rounded-lg border border-primary/20 bg-background focus:border-primary focus:ring-1 focus:ring-primary"
@@ -367,6 +374,21 @@
                 </div>
               </div>
 
+              {#if analysisError}
+                <div transition:fade>
+                  <Alert variant="destructive" class="mt-4">
+                    <AlertDescription>{analysisError}</AlertDescription>
+                  </Alert>
+                </div>
+              {/if}
+
+              {#if processedData}
+                <div class="mt-4 p-4 bg-primary/5 rounded-lg">
+                  <h3 class="font-medium mb-2">Analysis Results:</h3>
+                  <p>{processedData}</p>
+                </div>
+              {/if}
+
               <div class="grid grid-cols-2 gap-6">
                 {#each features as feature}
                   <div class="group space-y-2">
@@ -388,31 +410,30 @@
                 {/each}
               </div>
 
-              {#if $progress === 100}
+              {#if file}
                 <div class="border-t border-border pt-6" transition:fade>
                   <div class="flex justify-between items-center mb-4">
                     <span class="font-medium">Export Results</span>
                     <Badge
-                      variant="outline"
-                      class="text-green-500 bg-green-500/10"
-                    >
-                      Ready
-                    </Badge>
+                      variant="outline"class="text-green-500 bg-green-500/10"
+                      >
+                        Ready
+                      </Badge>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                      {#each ["PDF Report", "Word Document", "JSON Data", "Plain Text"] as format}
+                        <Button variant="outline" class="justify-start" type="submit" name="export" value={format}>
+                          <Download class="h-4 w-4 mr-2" />
+                          {format}
+                        </Button>
+                      {/each}
+                    </div>
                   </div>
-                  <div class="grid grid-cols-2 gap-3">
-                    {#each ["PDF Report", "Word Document", "JSON Data", "Plain Text"] as format}
-                      <Button variant="outline" class="justify-start">
-                        <Download class="h-4 w-4 mr-2" />
-                        {format}
-                      </Button>
-                    {/each}
-                  </div>
-                </div>
-              {/if}
-            </div>
-          </Card>
+                {/if}
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
+  </form>
