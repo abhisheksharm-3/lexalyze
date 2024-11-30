@@ -9,7 +9,7 @@ from datetime import datetime
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 from fastapi import HTTPException
-
+from .gemini_enrichment import enrich_legal_analysis
 from .models import (
     LegalEntities, LegalCitation, LegalClause, LegalAnalysis
 )
@@ -370,5 +370,11 @@ class LegalDocumentProcessor:
             created_at=datetime.now().isoformat(),
             processing_time=(datetime.now() - start_time).total_seconds()
         )
+        
+        # try:
+        #     analysis = enrich_legal_analysis(analysis)
+        # except Exception as e:
+        #     logger.error(f"Gemini enrichment failed: {str(e)}")
+        #     pass
 
         return analysis

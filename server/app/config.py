@@ -1,5 +1,10 @@
 import logging
 from cachetools import TTLCache, LRUCache
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(
@@ -19,6 +24,7 @@ MODEL_CONFIGS = {
     'summarizer': 'facebook/bart-large-cnn',
     'spacy_model': 'en_core_web_sm'
 }
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 # Patterns
 PATTERNS = {

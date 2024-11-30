@@ -3,7 +3,7 @@ import requests
 url = "http://127.0.0.1:8000/api/query"
 data = {
     "doc_id": "c22ce54a93cdb9a2371cfe6224e6a65b",
-    "question": "what are the main points  which raise questions",
+    "question": "what are the obligations here",
     "context": "None"
 }
 
