@@ -29,7 +29,12 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@types/file-saver": "^2.0.7",
+		"axios": "^1.7.8",
 		"class-variance-authority": "^0.7.0",
+		"file-saver": "^2.0.5",
+		"jspdf": "^2.5.2",
+		"mammoth": "^1.8.0",
 		"mode-watcher": "^0.4.1",
 		"npm-check-updates": "^17.1.10",
 		"svelte-motion": "^0.12.2"

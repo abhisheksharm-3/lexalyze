@@ -18,10 +18,15 @@
   import { Alert, AlertDescription } from "$lib/components/ui/alert";
   import { tweened } from "svelte/motion";
   import { fade } from "svelte/transition";
-  import { enhance } from "$app/forms";
-  import type { ActionData } from "./$types";
-
-  export let form: ActionData;
+  import { Dialog } from "$lib/components/ui/dialog";
+  import DialogContent from "$lib/components/ui/dialog/dialog-content.svelte";
+  import DialogHeader from "$lib/components/ui/dialog/dialog-header.svelte";
+  import DialogTitle from "$lib/components/ui/dialog/dialog-title.svelte";
+  import DialogDescription from "$lib/components/ui/dialog/dialog-description.svelte";
+  import jsPDF from 'jspdf';
+  import mammoth from 'mammoth';
+  import FileSaver from 'file-saver';
+const { saveAs } = FileSaver;
 
   interface AnalysisFeature {
     icon: typeof FileText;
@@ -35,7 +40,11 @@
   let dragActive = false;
   let error = "";
   let question = "";
+  let responseData: any = null;
+  let doc_id: string | null = null;
   let progress = tweened(0, { duration: 200 });
+  let queryAnswer = "";
+  let isDialogOpen = false;
 
   const features: AnalysisFeature[] = [
     {
@@ -91,14 +100,112 @@
     }
     return true;
   };
+  const exportPDF = () => {
+  if (!responseData) return;
 
-  const handleDrag = (e: DragEvent) => {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+  
+  // Set up some variables for positioning
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 10;
+  
+  // Title
+  doc.setFontSize(18);
+  doc.text('Document Analysis Report', margin, 20);
+  
+  // File details
+  doc.setFontSize(12);
+  doc.text(`File: ${file?.name || 'Unknown'}`, margin, 30);
+  doc.text(`Analyzed on: ${new Date().toLocaleString()}`, margin, 37);
+
+  // Analysis Result
+  doc.setFontSize(14);
+  doc.text('Analysis Result:', margin, 50);
+  
+  // Convert responseData to a formatted string
+  const analysisText = JSON.stringify(responseData, null, 2);
+  
+  // Split text with a larger width to accommodate more characters per line
+  const splitText = doc.splitTextToSize(analysisText, pageWidth - 2 * margin);
+  
+  // Add text with auto page breaking
+  doc.setFontSize(10);
+  doc.text(splitText, margin, 60, {
+    maxWidth: pageWidth - 2 * margin,
+    align: 'left'
+  });
+
+  // Save the PDF
+  doc.save('document_analysis_report.pdf');
+};
+
+const exportWord = () => {
+  if (!responseData) return;
+
+  // Create a simple HTML content for Word export
+  const content = `
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Document Analysis Report</title>
+      </head>
+      <body>
+        <h1>Document Analysis Report</h1>
+        <p><strong>File:</strong> ${file?.name || 'Unknown'}</p>
+        <p><strong>Analyzed on:</strong> ${new Date().toLocaleString()}</p>
+        
+        <h2>Analysis Result</h2>
+        <pre>${JSON.stringify(responseData, null, 2)}</pre>
+      </body>
+    </html>
+  `;
+
+  // Convert HTML to Word document blob
+  const blob = new Blob([content], { 
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+  });
+  saveAs(blob, 'document_analysis_report.docx');
+};
+
+const exportJSON = () => {
+  if (!responseData) return;
+
+  const exportData = {
+    fileName: file?.name,
+    analyzedAt: new Date().toISOString(),
+    analysisResult: responseData
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  saveAs(blob, 'document_analysis_report.json');
+};
+
+const exportPlainText = () => {
+  if (!responseData) return;
+
+  const content = `Document Analysis Report
+
+File: ${file?.name || 'Unknown'}
+Analyzed on: ${new Date().toLocaleString()}
+
+Analysis Result:
+${JSON.stringify(responseData, null, 2)}
+  `;
+
+  const blob = new Blob([content], { type: 'text/plain' });
+  saveAs(blob, 'document_analysis_report.txt');
+};
+const handleDrag = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     dragActive = e.type === "dragenter" || e.type === "dragover";
   };
-
-  const handleDrop = (e: DragEvent) => {
+  const handleDrop = async (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     dragActive = false;
@@ -108,21 +215,19 @@
       const droppedFile = e.dataTransfer.files[0];
       if (validateFile(droppedFile)) {
         file = droppedFile;
-        analyzing = true;
-        simulateAnalysis();
+        await analyzeDocument();
       }
     }
   };
 
-  const handleFileUpload = (e: Event) => {
+  const handleFileUpload = async (e: Event) => {
     error = "";
     const input = e.target as HTMLInputElement;
     if (input.files?.[0]) {
       const selectedFile = input.files[0];
       if (validateFile(selectedFile)) {
         file = selectedFile;
-        analyzing = true;
-        simulateAnalysis();
+        await analyzeDocument();
       }
     }
   };
@@ -132,7 +237,70 @@
     progress.set(0);
     analyzing = false;
     error = "";
+    doc_id = null;
+    responseData = null;
   };
+
+  const analyzeDocument = async () => {
+    if (!file) return;
+    analyzing = true;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/analyze-document", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        doc_id = data.doc_id;
+        responseData = data;
+        simulateAnalysis();
+      } else {
+        throw new Error(data.error || "Failed to analyze document");
+      }
+    } catch (err) {
+      error = (err as Error).message || "An error occurred";
+      analyzing = false;
+    }
+  };
+
+  const sendQuery = async () => {
+    if (!doc_id || !question.trim()) {
+      error = "Document ID or question is missing.";
+      return;
+    }
+
+    try {
+      analyzing = true;
+
+      const response = await fetch("/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          doc_id,
+          question: question.trim(),
+          context: responseData,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Query failed.");
+      }
+
+      const data = await response.json();
+      queryAnswer = data.answer;
+      isDialogOpen = true;
+    } catch (err) {
+      error = err instanceof Error ? err.message : "An error occurred";
+    } finally {
+      analyzing = false;
+    }
+  };
+
 
   const simulateAnalysis = () => {
     let currentProgress = 0;
@@ -149,13 +317,14 @@
 
   const setQuestionFromSuggestion = (q: string) => {
     question = q;
+    sendQuery();
   };
-
-  $: processedData = form?.processedData;
-  $: analysisError = form?.error;
 </script>
 
-<form method="POST" use:enhance action="?/uploadDocument" enctype="multipart/form-data" class="relative w-full min-h-screen bg-background text-foreground overflow-hidden">
+
+<div
+  class="relative w-full min-h-screen bg-background text-foreground overflow-hidden"
+>
   <div class="absolute inset-0">
     <div
       class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(var(--primary-rgb),0.04),transparent_50%)]"
@@ -218,7 +387,6 @@
               <input
                 type="file"
                 id="file-upload"
-                name="file"
                 class="hidden"
                 on:change={handleFileUpload}
                 accept=".pdf,.doc,.docx,.txt"
@@ -348,7 +516,6 @@
                 <div class="relative">
                   <input
                     type="text"
-                    name="question"
                     bind:value={question}
                     placeholder="Ask a question about your document..."
                     class="w-full p-4 pr-12 rounded-lg border border-primary/20 bg-background focus:border-primary focus:ring-1 focus:ring-primary"
@@ -358,6 +525,15 @@
                     class="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5"
                   />
                 </div>
+                <button 
+                  class="focus-visible:ring-ring inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 shadow h-9 px-4 py-2 w-full mt-2"
+                  disabled={!file || analyzing || !question.trim()}
+                  on:click={sendQuery}
+                >
+                  <MessageSquare class="h-4 w-4 mr-2" />
+                  Submit Query
+                  <ArrowRight class="h-4 w-4 ml-2" />
+                </button>
 
                 <div class="grid grid-cols-2 gap-3">
                   {#each suggestedQuestions as q}
@@ -373,21 +549,6 @@
                   {/each}
                 </div>
               </div>
-
-              {#if analysisError}
-                <div transition:fade>
-                  <Alert variant="destructive" class="mt-4">
-                    <AlertDescription>{analysisError}</AlertDescription>
-                  </Alert>
-                </div>
-              {/if}
-
-              {#if processedData}
-                <div class="mt-4 p-4 bg-primary/5 rounded-lg">
-                  <h3 class="font-medium mb-2">Analysis Results:</h3>
-                  <p>{processedData}</p>
-                </div>
-              {/if}
 
               <div class="grid grid-cols-2 gap-6">
                 {#each features as feature}
@@ -410,30 +571,50 @@
                 {/each}
               </div>
 
-              {#if file}
+              {#if $progress === 100}
                 <div class="border-t border-border pt-6" transition:fade>
                   <div class="flex justify-between items-center mb-4">
                     <span class="font-medium">Export Results</span>
                     <Badge
-                      variant="outline"class="text-green-500 bg-green-500/10"
-                      >
-                        Ready
-                      </Badge>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                      {#each ["PDF Report", "Word Document", "JSON Data", "Plain Text"] as format}
-                        <Button variant="outline" class="justify-start" type="submit" name="export" value={format}>
-                          <Download class="h-4 w-4 mr-2" />
-                          {format}
-                        </Button>
-                      {/each}
-                    </div>
+                      variant="outline"
+                      class="text-green-500 bg-green-500/10"
+                    >
+                      Ready
+                    </Badge>
                   </div>
-                {/if}
-              </div>
-            </Card>
-          </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    {#each [
+                      { format: 'PDF Report', handler: exportPDF },
+                      { format: 'Word Document', handler: exportWord },
+                      { format: 'JSON Data', handler: exportJSON },
+                      { format: 'Plain Text', handler: exportPlainText }
+                    ] as { format, handler }}
+                      <button 
+                        class="focus-visible:ring-ring inline-flex items-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 border-input bg-background hover:bg-accent hover:text-accent-foreground border shadow-sm h-9 px-4 py-2 justify-start"
+                        disabled={!$progress || $progress < 100}
+                        on:click={handler}
+                      >
+                        <Download class="h-4 w-4 mr-2" />
+                        {format}
+                    </button>
+                    {/each}
+                  </div>
+                </div>
+              {/if}
+            </div>
+          </Card>
         </div>
       </div>
     </div>
-  </form>
+  </div>
+  <Dialog bind:open={isDialogOpen}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Document Query Result</DialogTitle>
+        <DialogDescription>
+          {queryAnswer}
+        </DialogDescription>
+      </DialogHeader>
+    </DialogContent>
+  </Dialog>
+</div>
