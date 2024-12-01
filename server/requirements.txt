@@ -9,3 +9,4 @@ Requests==2.32.3
 spacy==3.8.2
 transformers==4.46.2
 uvicorn==0.32.1
+google-generativeai
