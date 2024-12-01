@@ -63,6 +63,7 @@ server/
 │   ├── utils/           # Utility functions
 ├── requirements.txt     # Python dependencies
 ├── main.py              # FastAPI application entry point
+├── Dockerfile           # Docker setup for backend deployment
 ```
 
 ---
@@ -117,7 +118,7 @@ server/
 - Deployed at [lexalyze.vercel.app](https://lexalyze.vercel.app)
 
 ### Backend
-- **Platform**: [Koyeb](https://www.koyeb.com)  
+- **Platform**: [Hugging Face Spaces](https://huggingface.co/spaces)
 - Deployed as a containerized FastAPI application
 
 ---
@@ -151,7 +152,7 @@ server/
   - Summarization: [BART Large CNN](https://huggingface.co/facebook/bart-large-cnn)
 - **Deployment**:  
   - Frontend: [Vercel](https://vercel.com)  
-  - Backend: [Koyeb](https://www.koyeb.com)
+  - Backend: [Hugging Face Spaces](https://huggingface.co/spaces)
 
 ---
 
